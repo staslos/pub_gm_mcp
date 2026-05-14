@@ -1,6 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "mcp__pub-gm-mcp__get_running_guidelines",
+      "mcp__pub-gm-mcp__get_parsing_guidelines",
       "mcp__pub-gm-mcp__list_adventures",
       "mcp__pub-gm-mcp__get_adventure",
       "mcp__pub-gm-mcp__save_adventure",

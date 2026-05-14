@@ -50,6 +50,15 @@ async def list_resources() -> list[Resource]:
             mimeType="text/markdown",
         ),
         Resource(
+            uri="pub-gm://guidelines/running",
+            name="Adventure Running Guidelines",
+            description=(
+                "OSR-style rules for running a solo adventure session as GM. "
+                "Read this before starting or resuming any session."
+            ),
+            mimeType="text/markdown",
+        ),
+        Resource(
             uri="pub-gm://schema/adventure",
             name="Adventure JSON Schema",
             description="Full JSON schema for the Adventure data model (a single explorable site).",
@@ -71,6 +80,11 @@ async def list_resources() -> list[Resource]:
 async def read_resource(uri: str) -> ReadResourceResult:
     if uri == "pub-gm://guidelines/parsing":
         text = (RESOURCES_DIR / "parsing_guidelines.md").read_text()
+        return ReadResourceResult(
+            contents=[TextResourceContents(uri=uri, mimeType="text/markdown", text=text)]
+        )
+    if uri == "pub-gm://guidelines/running":
+        text = (RESOURCES_DIR / "running_guidelines.md").read_text()
         return ReadResourceResult(
             contents=[TextResourceContents(uri=uri, mimeType="text/markdown", text=text)]
         )
@@ -102,13 +116,31 @@ async def read_resource(uri: str) -> ReadResourceResult:
 @server.list_tools()
 async def list_tools() -> list[Tool]:
     return [
+        # -- Guidelines (call these before parsing or running) --
+        Tool(
+            name="get_running_guidelines",
+            description=(
+                "Returns GM guidelines for running a solo adventure session. "
+                "Call this before create_session or create_campaign_session."
+            ),
+            inputSchema={"type": "object", "properties": {}},
+        ),
+        Tool(
+            name="get_parsing_guidelines",
+            description=(
+                "Returns guidelines and adventure schema for parsing a source text into "
+                "the pub-gm-mcp data model. Call this before save_adventure or upsert_area."
+            ),
+            inputSchema={"type": "object", "properties": {}},
+        ),
         # -- Adventure authoring (used by Claude when parsing a source text) --
         Tool(
             name="save_adventure",
             description=(
                 "Persist a complete adventure. Pass the full adventure object. "
                 "Overwrites any existing adventure with the same id. "
-                "Use this to create a new adventure or replace one entirely."
+                "Use this to create a new adventure or replace one entirely. "
+                "Call get_parsing_guidelines before parsing any adventure."
             ),
             inputSchema={
                 "type": "object",
@@ -172,7 +204,10 @@ async def list_tools() -> list[Tool]:
         # -- Session lifecycle --
         Tool(
             name="create_session",
-            description="Start a new play session for a stored adventure.",
+            description=(
+                "Start a new play session for a stored adventure. "
+                "Call get_running_guidelines before calling this."
+            ),
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -360,7 +395,10 @@ async def list_tools() -> list[Tool]:
         # -- Campaign sessions --
         Tool(
             name="create_campaign_session",
-            description="Start a new campaign session.",
+            description=(
+                "Start a new campaign session. "
+                "Call get_running_guidelines before calling this."
+            ),
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -477,6 +515,16 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
 
 
 async def _dispatch(name: str, args: dict) -> str:
+    # -- Guidelines --
+
+    if name == "get_running_guidelines":
+        return (RESOURCES_DIR / "running_guidelines.md").read_text()
+
+    if name == "get_parsing_guidelines":
+        text = (RESOURCES_DIR / "parsing_guidelines.md").read_text()
+        schema = json.dumps(Adventure.model_json_schema(), indent=2)
+        return f"{text}\n\n---\n\n## Adventure JSON Schema\n\n```json\n{schema}\n```"
+
     # -- Adventure authoring --
 
     if name == "save_adventure":

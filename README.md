@@ -131,11 +131,21 @@ For a multi-site campaign, also read `pub-gm://schema/campaign` and follow up wi
 
 ## Running an adventure
 
+### One-time setup
+
+Add the following to **Settings → General → Instructions for Claude** in Claude Desktop:
+
+> When the user asks to run, play, start, or continue an adventure, always use the pub-gm-mcp MCP server tools. Call `get_running_guidelines` first, then proceed with `create_session` and `enter_area`. Never narrate adventure content from memory — always call the appropriate pub-gm-mcp tool and narrate what it returns.
+
+This tells Claude to use pub-gm-mcp by default in every conversation.
+
+### Starting a session
+
 In a new Claude Desktop conversation, just say:
 
 > *"Start a session for the `my_adventure` adventure and narrate it."*
 
-Claude will call `create_session` and `enter_area` on its own. No resource prompts needed for play — those are only required when parsing. For playing, the tools are self-describing enough.
+Claude will call `get_running_guidelines`, then `create_session` and `enter_area` on its own.
 
 > **Note:** Each new Claude Desktop conversation starts fresh. Claude won't remember a previous session ID — it will create a new one, which is correct behaviour.
 
@@ -208,6 +218,7 @@ The GM never volunteers information. Every detail is earned.
 
 | URI | Content |
 |-----|---------|
+| `pub-gm://guidelines/running` | OSR running rules — read before starting any session |
 | `pub-gm://guidelines/parsing` | OSR parsing rules — read before parsing any adventure |
 | `pub-gm://schema/adventure` | Adventure JSON schema |
 | `pub-gm://schema/campaign` | Campaign JSON schema |
