@@ -237,7 +237,40 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="look_at_npc",
-            description="Focus attention on a specific NPC. Returns first impression and telltale hint.",
+            description=(
+                "Focus attention on a specific NPC. Returns first impression and telltale hint. "
+                "Never reveals the NPC's name — call introduce_npc once they give it."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "session_id": {"type": "string"},
+                    "npc_id": {"type": "string"},
+                },
+                "required": ["session_id", "npc_id"],
+            },
+        ),
+        Tool(
+            name="introduce_npc",
+            description=(
+                "Record that an NPC has revealed their name in play — call this when an NPC "
+                "introduces themselves or another character names them. Returns the name."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "session_id": {"type": "string"},
+                    "npc_id": {"type": "string"},
+                },
+                "required": ["session_id", "npc_id"],
+            },
+        ),
+        Tool(
+            name="get_npc_name",
+            description=(
+                "Returns the NPC's name if the party has learned it, otherwise 'unknown'. "
+                "Use this to check before using a name in narration."
+            ),
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -523,6 +556,14 @@ async def _dispatch(name: str, args: dict) -> str:
     if name == "look_at_npc":
         session = narrator.load_session(args["session_id"])
         return narrator.look_at_npc(session, args["npc_id"])
+
+    if name == "introduce_npc":
+        session = narrator.load_session(args["session_id"])
+        return narrator.introduce_npc(session, args["npc_id"])
+
+    if name == "get_npc_name":
+        session = narrator.load_session(args["session_id"])
+        return narrator.get_npc_name(session, args["npc_id"])
 
     if name == "list_exits":
         session = narrator.load_session(args["session_id"])

@@ -17,6 +17,8 @@ class AreaState(BaseModel):
     revealed_detail_indices: list[int] = Field(default_factory=list)
     revealed_item_ids: list[str] = Field(default_factory=list)
     revealed_npc_ids: list[str] = Field(default_factory=list)
+    # NPCs whose names the party has learned through in-play introduction
+    named_npc_ids: list[str] = Field(default_factory=list)
     resolved_encounter_ids: list[str] = Field(default_factory=list)
 
 

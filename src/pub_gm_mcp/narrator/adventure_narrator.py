@@ -85,7 +85,7 @@ class AdventureNarrator:
         return area.details[idx]
 
     def look_at_npc(self, session: Session, npc_id: str) -> str:
-        """Party focuses attention on an NPC — returns impression + telltale."""
+        """Party focuses attention on an NPC — returns impression + telltale. Name is never revealed here."""
         adventure = self.parser.load(session.adventure_id)
         area = self._current_area(adventure, session.state)
 
@@ -94,13 +94,51 @@ class AdventureNarrator:
             raise NarrationError(f"NPC '{npc_id}' not present in current area")
 
         area_state = session.state.get_area_state(area.id)
-        area_state.revealed_npc_ids.append(npc_id)
+        if npc_id not in area_state.revealed_npc_ids:
+            area_state.revealed_npc_ids.append(npc_id)
         self.save_session(session)
 
         parts = [npc.first_impression]
         if npc.telltale:
             parts.append(npc.telltale)
         return " ".join(parts)
+
+    def introduce_npc(self, session: Session, npc_id: str) -> str:
+        """
+        Record that an NPC has revealed their name in play.
+        Returns the name so the GM can use it going forward.
+        Call this when an NPC introduces themselves or another character names them.
+        """
+        adventure = self.parser.load(session.adventure_id)
+        area = self._current_area(adventure, session.state)
+
+        npc = next((n for n in area.npcs if n.id == npc_id), None)
+        if npc is None:
+            raise NarrationError(f"NPC '{npc_id}' not present in current area")
+
+        area_state = session.state.get_area_state(area.id)
+        if npc_id not in area_state.named_npc_ids:
+            area_state.named_npc_ids.append(npc_id)
+        self.save_session(session)
+
+        return npc.name
+
+    def get_npc_name(self, session: Session, npc_id: str) -> str:
+        """
+        Returns the NPC's name if the party has learned it, otherwise 'unknown'.
+        Use this to check before using a name in narration.
+        """
+        adventure = self.parser.load(session.adventure_id)
+        area = self._current_area(adventure, session.state)
+
+        npc = next((n for n in area.npcs if n.id == npc_id), None)
+        if npc is None:
+            raise NarrationError(f"NPC '{npc_id}' not present in current area")
+
+        area_state = session.state.get_area_state(area.id)
+        if npc_id in area_state.named_npc_ids:
+            return npc.name
+        return "unknown"
 
     def list_visible_exits(self, session: Session) -> list[dict]:
         """Return connections the party can perceive (non-hidden)."""

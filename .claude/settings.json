@@ -17,6 +17,8 @@
       "mcp__pub-gm-mcp__enter_area",
       "mcp__pub-gm-mcp__inspect_area",
       "mcp__pub-gm-mcp__look_at_npc",
+      "mcp__pub-gm-mcp__introduce_npc",
+      "mcp__pub-gm-mcp__get_npc_name",
       "mcp__pub-gm-mcp__list_exits",
       "mcp__pub-gm-mcp__add_gm_note",
       "mcp__pub-gm-mcp__create_campaign_session",
