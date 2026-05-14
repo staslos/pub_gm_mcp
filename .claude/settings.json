@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__pub-gm-mcp__list_adventures",
+      "mcp__pub-gm-mcp__get_adventure",
+      "mcp__pub-gm-mcp__save_adventure",
+      "mcp__pub-gm-mcp__upsert_area",
+      "mcp__pub-gm-mcp__delete_adventure",
+      "mcp__pub-gm-mcp__list_campaigns",
+      "mcp__pub-gm-mcp__get_campaign",
+      "mcp__pub-gm-mcp__save_campaign",
+      "mcp__pub-gm-mcp__upsert_travel_node",
+      "mcp__pub-gm-mcp__delete_campaign",
+      "mcp__pub-gm-mcp__list_sessions",
+      "mcp__pub-gm-mcp__create_session",
+      "mcp__pub-gm-mcp__get_session_state",
+      "mcp__pub-gm-mcp__enter_area",
+      "mcp__pub-gm-mcp__inspect_area",
+      "mcp__pub-gm-mcp__look_at_npc",
+      "mcp__pub-gm-mcp__list_exits",
+      "mcp__pub-gm-mcp__add_gm_note",
+      "mcp__pub-gm-mcp__create_campaign_session",
+      "mcp__pub-gm-mcp__get_campaign_session_state",
+      "mcp__pub-gm-mcp__campaign_travel_to",
+      "mcp__pub-gm-mcp__campaign_inspect_node",
+      "mcp__pub-gm-mcp__campaign_list_exits",
+      "mcp__pub-gm-mcp__campaign_enter_site",
+      "mcp__pub-gm-mcp__campaign_leave_site",
+      "mcp__pub-gm-mcp__campaign_add_gm_note"
+    ]
+  }
+}
