@@ -225,3 +225,13 @@ data/
 ```
 
 Adventures and campaigns are version-controlled. Session state is local only.
+
+---
+
+## Copyright and contributed adventures
+
+Parsing an adventure for personal use is generally considered fair use. **Do not commit parsed content from published, copyrighted adventures to this repository** — that includes area descriptions, NPC text, items, or any other content derived from a book or PDF you did not write.
+
+Only commit adventures you authored yourself or content released under a license that explicitly permits redistribution (e.g. Creative Commons, OGL, or similar).
+
+The `data/adventures/example_tavern.json` included here is original content written for this project.
