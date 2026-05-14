@@ -1,6 +1,6 @@
 # pub-gm-mcp
 
-An MCP server that turns Claude Desktop into an OSR-style Game Master for published TTRPG adventures.
+An MCP server that turns Claude Desktop into an OSR-style Game Master for solo TTRPG play.
 
 You provide the adventure text. Claude parses it, persists the structured data, and runs narration during play — following Old School Renaissance principles: information is earned, danger is real, and the GM never volunteers what the players haven't looked for.
 
