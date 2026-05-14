@@ -534,8 +534,16 @@ async def _dispatch(name: str, args: dict) -> str:
     if name == "get_session_state":
         session = narrator.load_session(args["session_id"])
         s = session.state
+        if session.party:
+            party_str = ", ".join(
+                f"{m.name} ({m.description})" if m.description else m.name
+                for m in session.party
+            )
+        else:
+            party_str = "none"
         lines = [
             f"Adventure: {session.adventure_id}",
+            f"Party: {party_str}",
             f"Current area: {s.current_area_id or 'none'}",
             f"Visited areas: {', '.join(s.area_states.keys()) or 'none'}",
             f"Inventory: {', '.join(s.party_inventory.keys()) or 'empty'}",
