@@ -109,9 +109,11 @@ Restart Claude Desktop. Check `~/Library/Logs/Claude/mcp-server-pub-gm-mcp.log` 
 
 ## Parsing a new adventure
 
-In a Claude Desktop conversation, attach your adventure file (PDF or text) and say:
+In a new Claude Desktop conversation, attach your adventure file (PDF or text) and say:
 
 > *"Before parsing, read the resources at `pub-gm://guidelines/parsing` and `pub-gm://schema/adventure` from the pub-gm-mcp server, then parse this adventure and persist it using the MCP tools."*
+
+That one prompt does everything: fetches the OSR rules and schema, reads the file, builds the structured JSON, and persists it.
 
 Claude will:
 1. Read the OSR parsing guidelines and adventure schema from the MCP server
@@ -119,19 +121,33 @@ Claude will:
 3. Call `save_adventure` + `upsert_area` to persist it area by area
 4. Call `get_adventure` to verify the result
 
+**File format tips:**
+- PDF works well for most published adventures
+- For large adventures, Claude will parse area by area using `upsert_area` rather than one big `save_adventure` call — that's expected and fine
+
 For a multi-site campaign, also read `pub-gm://schema/campaign` and follow up with `save_campaign`.
 
 ---
 
 ## Running an adventure
 
-### Single adventure
+In a new Claude Desktop conversation, just say:
+
+> *"Start a session for the `my_adventure` adventure and narrate it."*
+
+Claude will call `create_session` and `enter_area` on its own. No resource prompts needed for play — those are only required when parsing. For playing, the tools are self-describing enough.
+
+> **Note:** Each new Claude Desktop conversation starts fresh. Claude won't remember a previous session ID — it will create a new one, which is correct behaviour.
+
+### Option A — Single adventure *(recommended for first playthrough)*
+
 ```
 create_session  adventure_id="my_adventure"  party=[...]
 enter_area      session_id="..."  area_id="starting_area"
 ```
 
-### Full campaign
+### Option B — Full campaign *(travel between multiple sites)*
+
 ```
 create_campaign_session  campaign_id="my_campaign"  party=[...]
 campaign_travel_to       session_id="..."  node_id="first_site"
@@ -139,6 +155,8 @@ create_session           adventure_id="first_site"
 campaign_enter_site      campaign_session_id="..."  adventure_session_id="..."
 enter_area               session_id="..."  area_id="starting_area"
 ```
+
+When leaving a site: `campaign_leave_site` → `campaign_travel_to` → repeat.
 
 ---
 
