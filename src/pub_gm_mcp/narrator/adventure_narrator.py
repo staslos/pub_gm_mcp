@@ -61,10 +61,11 @@ class AdventureNarrator:
 
         session.state.current_area_id = area_id
         area_state = session.state.get_area_state(area_id)
+        first_visit = not area_state.visited   # capture before mutation
         area_state.visited = True
         self.save_session(session)
 
-        return self._format_entry(area, first_visit=not area_state.visited)
+        return self._format_entry(area, first_visit=first_visit)
 
     def inspect_area(self, session: Session) -> str:
         """Party takes a careful look around — surfaces one unrevealed detail."""
@@ -163,7 +164,11 @@ class AdventureNarrator:
         return area
 
     def _format_entry(self, area: Area, first_visit: bool) -> str:
-        parts = [area.at_a_glance]
+        # Revisit: abbreviated opener — party already knows this place
+        if not first_visit:
+            parts = [f"You return to {area.name}."]
+        else:
+            parts = [area.at_a_glance]
 
         # Visible, non-hidden NPCs get a brief mention on entry
         visible_npcs = [n for n in area.npcs if not n.hidden]
