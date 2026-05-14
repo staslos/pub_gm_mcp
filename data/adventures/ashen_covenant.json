@@ -1,0 +1,397 @@
+{
+  "id": "ashen_covenant",
+  "title": "The Ashen Covenant",
+  "system": "system-agnostic",
+  "synopsis": "A medium barrow built for a mage who struck a bargain with something old. The bargain was never completed. Whatever waits in the reliquary at the heart of the ruin still demands its due — and will keep demanding until something is sacrificed to appease it. The barrow has since been colonised by vermin, scavengers, and things drawn to old power.",
+  "starting_area_id": "ossuary_entrance",
+  "areas": [
+    {
+      "id": "ossuary_entrance",
+      "name": "Ossuary Entrance",
+      "at_a_glance": "A vaulted entry hall choked with skulls stacked floor to ceiling. A wall of fire blocks the far passage — old wood and bone fuel it. The heat hits you before you're fully inside.",
+      "details": [
+        "The skulls are arranged by size, smallest near the top. Someone spent time on this.",
+        "Beneath the fire, the floor is blackened but not warped. This has burned before — many times.",
+        "Scratched into the lintel above the fire, barely visible through the heat shimmer: a single word in an old script."
+      ],
+      "threat_level": "immediate",
+      "threat_telltale": "The fire is not dying down. It has been burning a long time.",
+      "items": [],
+      "npcs": [],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "anointed_chamber",
+          "label": "south passage through the fire",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        }
+      ],
+      "tags": ["entrance", "hazard"],
+      "notes": {}
+    },
+    {
+      "id": "anointed_chamber",
+      "name": "Anointed Chamber",
+      "at_a_glance": "A low-ceilinged passage that smells of old oil and something mineral. The floor feels faintly wrong underfoot — not wet, just different. Faint vibrations rise through the stone at irregular intervals.",
+      "details": [
+        "The stone has a faint greasy sheen — anointed with something long dried.",
+        "One flagstone near the centre sits slightly proud of its neighbours.",
+        "Above the raised flagstone, a hairline crack runs across the ceiling."
+      ],
+      "threat_level": "subtle",
+      "threat_telltale": "The vibrations come from above, not below.",
+      "items": [],
+      "npcs": [],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "ossuary_entrance",
+          "label": "north passage back toward the fire",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "wailing_corridor",
+          "label": "east door, swollen in its frame",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        }
+      ],
+      "tags": ["trap"],
+      "notes": {}
+    },
+    {
+      "id": "wailing_corridor",
+      "name": "Wailing Corridor",
+      "at_a_glance": "A long corridor lined with bones set into alcoves. Wind moves through here from somewhere — a low, reedy moan follows each gust. The far end is dark.",
+      "details": [
+        "The bones in the alcoves are old but the alcoves themselves have been disturbed — recently.",
+        "Something has been feeding on the bones. Gnaw marks, not rodent-sized.",
+        "Wedged behind a femur in one of the lower alcoves: a squat stone idol with a hinged jaw."
+      ],
+      "threat_level": "present",
+      "threat_telltale": "The moaning stops abruptly. Something in the dark has noticed you.",
+      "items": [
+        {
+          "id": "lockjaw_idol",
+          "name": "Lockjaw Idol",
+          "description": "A palm-sized stone idol with a hinged jaw. Clamp it onto a chest, door, or portal to seal it shut until dawn.",
+          "hidden": true,
+          "properties": { "value_gp": 120 }
+        }
+      ],
+      "npcs": [
+        {
+          "id": "fire_beetle",
+          "name": "Giant Fire Beetle",
+          "description": "A beetle the size of a dog, hostile and lurking in the dark. Bioluminescent glands provide dim amber light. Its bite is savage.",
+          "first_impression": "A beetle the size of a dog crouches motionless in the far alcove. Two cold points of amber light — its glands — are the only sign it is alive.",
+          "telltale": "Its mandibles are wet.",
+          "disposition": "hostile",
+          "hidden": true,
+          "notes": {}
+        }
+      ],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "guardian_hall",
+          "label": "north door, iron-barred",
+          "hidden": false,
+          "locked": true,
+          "locked_description": "Heavy iron bar dropped into brackets on the far side."
+        },
+        {
+          "target_area_id": "anointed_chamber",
+          "label": "west door, swollen in its frame",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        }
+      ],
+      "tags": ["monster"],
+      "notes": {}
+    },
+    {
+      "id": "guardian_hall",
+      "name": "Guardian Hall",
+      "at_a_glance": "A broad hall dominated by a cracked stone statue of a robed figure, one arm raised. Old blood darkens the floor around its base. The smell is organic — not rot exactly, but close.",
+      "details": [
+        "The statue's raised hand once held something. The grip is empty, the stone around it cleaner than the rest.",
+        "The blood on the floor is not all old. Some of it is fresh.",
+        "Behind the statue's plinth, half-hidden in shadow: a leather satchel with a buckled flap."
+      ],
+      "threat_level": "subtle",
+      "threat_telltale": "The clicking of mandibles stops when you stop moving.",
+      "items": [
+        {
+          "id": "foragers_satchel",
+          "name": "Forager's satchel",
+          "description": "A leather satchel containing a cracked mirror, a functional lantern, and a stoppered wineskin. Roughly 4 gold worth of salvage.",
+          "hidden": true,
+          "properties": { "value_gp": 4.4 }
+        }
+      ],
+      "npcs": [
+        {
+          "id": "giant_ants",
+          "name": "Giant Ants",
+          "description": "Two giant ants the size of terriers, foraging the hall. Neutral unless provoked or their colony is threatened. Once blood is drawn, they fight to the death.",
+          "first_impression": "Two ants the size of terriers move methodically through the hall, mandibles clicking as they work.",
+          "telltale": "They are not eating. They are carrying fragments of metal toward a crack in the east wall.",
+          "disposition": "neutral",
+          "hidden": false,
+          "notes": {}
+        }
+      ],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "ghostlight_hall",
+          "label": "east door, iron-barred",
+          "hidden": false,
+          "locked": true,
+          "locked_description": "Iron bar on the far side."
+        },
+        {
+          "target_area_id": "hieroglyph_hall",
+          "label": "southeast passage, door jammed in frame",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "wailing_corridor",
+          "label": "south door, iron-barred",
+          "hidden": false,
+          "locked": true,
+          "locked_description": "Iron bar dropped into brackets on this side."
+        }
+      ],
+      "tags": ["monster"],
+      "notes": {}
+    },
+    {
+      "id": "ghostlight_hall",
+      "name": "Ghostlight Hall",
+      "at_a_glance": "Pale light pulses from cracks in the walls — cold, sourceless, moving like breath. Five kobolds crouch around the remains of something recently killed, passing pieces between them. They look up.",
+      "details": [
+        "The ghostlight is brightest near the northern wall, where a deep crack runs floor to ceiling.",
+        "Voices — layered, overlapping, too faint to parse — come from inside the crack.",
+        "The kobolds' weapons are mismatched but well-maintained. These aren't scavengers."
+      ],
+      "threat_level": "subtle",
+      "threat_telltale": "The ghostlight dims slightly when raised voices fill the room.",
+      "items": [
+        {
+          "id": "etched_sword_ghostlight",
+          "name": "Great sword, etched pommel",
+          "description": "A heavy sword with an intricately etched pommel. Well-balanced, clearly made for someone with reach.",
+          "hidden": false,
+          "properties": { "value_gp": 4 }
+        }
+      ],
+      "npcs": [
+        {
+          "id": "kobold_warriors",
+          "name": "Kobold Warriors",
+          "description": "Five kobold warriors, small reptilian humanoids in scraps of armour. Curious but not immediately aggressive. They coordinate well and will press ranged attacks if a fight starts.",
+          "first_impression": "Five small reptilian figures in scraps of armour, crouched over a meal. They have stopped eating.",
+          "telltale": "The largest one hasn't reached for a weapon yet. It is waiting to see what you do first.",
+          "disposition": "neutral",
+          "hidden": false,
+          "notes": {}
+        }
+      ],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "sarcophagus_hall",
+          "label": "east passage",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "hieroglyph_hall",
+          "label": "south passage",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "guardian_hall",
+          "label": "west door, iron-barred",
+          "hidden": false,
+          "locked": true,
+          "locked_description": "Iron bar on the far side."
+        }
+      ],
+      "tags": ["monster", "social"],
+      "notes": {}
+    },
+    {
+      "id": "hieroglyph_hall",
+      "name": "Hieroglyph Hall",
+      "at_a_glance": "The walls are covered floor to ceiling in carved script — tight, regular, covering every surface including the ceiling. A small fire burns in the centre, tended by a seething mass of rats. The smell is awful.",
+      "details": [
+        "The hieroglyphs on the north wall are different from the rest — newer cuts, a rougher hand, written in haste.",
+        "The rats are cooking something unidentifiable on a flat stone over the fire. There is a system to it.",
+        "Behind a collapsed section of the west wall, half-buried under rubble: a shirt of dark mail that seems to absorb the firelight."
+      ],
+      "threat_level": "subtle",
+      "threat_telltale": "The carved script near the door includes a repeated symbol — the same one that appears above the fire.",
+      "items": [
+        {
+          "id": "grave_ward_mail",
+          "name": "Grave-Ward Mail",
+          "description": "Dark chainmail, armour +1. Undead cannot drain life from the wearer on a partial success.",
+          "hidden": true,
+          "properties": { "value_gp": 200 }
+        }
+      ],
+      "npcs": [
+        {
+          "id": "rat_swarm",
+          "name": "Rat Swarm",
+          "description": "Dozens of rats moving with unsettling coordination. Curious, not immediately hostile. Carry filth fever in their bites — onset delayed hours after infection.",
+          "first_impression": "Dozens of rats swarm the centre of the room, moving with unsettling coordination around a small fire.",
+          "telltale": "They part to let you pass, then close behind you.",
+          "disposition": "neutral",
+          "hidden": false,
+          "notes": {}
+        }
+      ],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "ghostlight_hall",
+          "label": "north passage",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "sarcophagus_hall",
+          "label": "northeast passage",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "guardian_hall",
+          "label": "west passage, door jammed in frame",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        }
+      ],
+      "tags": ["monster", "clue"],
+      "notes": {}
+    },
+    {
+      "id": "sarcophagus_hall",
+      "name": "Sarcophagus Hall",
+      "at_a_glance": "Three stone sarcophagi line the walls, lids displaced or shattered. The ceiling is alive — thousands of bats packed into every crack and crevice. Fresh footprints in the dust lead toward the far door and stop.",
+      "details": [
+        "The sarcophagi are empty. Whatever was in them left through the lids, not the sides.",
+        "The footprints stop mid-hall with no side passages and no explanation.",
+        "Lodged in a crack in the nearest sarcophagus, wrapped in old leather: a small idol carved from polished amber."
+      ],
+      "threat_level": "present",
+      "threat_telltale": "The footprints in the dust were made by bare feet.",
+      "items": [
+        {
+          "id": "amber_idol",
+          "name": "Polished amber idol",
+          "description": "A small idol carved from a single piece of amber, perfectly smooth. Worth 25 gp to the right buyer — more to someone who knows what it is.",
+          "hidden": true,
+          "properties": { "value_gp": 25 }
+        }
+      ],
+      "npcs": [
+        {
+          "id": "bat_swarm",
+          "name": "Bat Swarm",
+          "description": "Thousands of bats roosting in the ceiling. Suspicious and easily startled. Loud noise or bright light sends them into a panicked swarm.",
+          "first_impression": "The ceiling shifts and rustles — a living mass of bats, unsettled but not yet moving.",
+          "telltale": "They have nested around something in the far corner. They are not pleased about you noticing.",
+          "disposition": "neutral",
+          "hidden": false,
+          "notes": {}
+        }
+      ],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "cursed_reliquary",
+          "label": "east door, jammed in frame",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "hieroglyph_hall",
+          "label": "south passage",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        },
+        {
+          "target_area_id": "ghostlight_hall",
+          "label": "west passage",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        }
+      ],
+      "tags": ["monster", "clue"],
+      "notes": {}
+    },
+    {
+      "id": "cursed_reliquary",
+      "name": "Cursed Reliquary",
+      "at_a_glance": "A wide chamber filled with ash — ankle-deep, undisturbed. At the centre, a stone reliquary on a plinth, its carved surface dark with old staining. The far side of the room ends in a crumbled edge — a broken bridge over a drop into darkness. The air tastes of metal.",
+      "details": [
+        "The ash smells faintly of hair and cloth, not wood. It is very fine.",
+        "The reliquary is sealed with iron clasps shaped like hands pressed flat. They are warm to the touch.",
+        "At the edge of the drop, a great sword has been driven point-first into the remaining stone, its etched pommel facing the reliquary — an offering, or a warning."
+      ],
+      "threat_level": "immediate",
+      "threat_telltale": "The ash near the reliquary has been disturbed. Something has been here recently.",
+      "items": [
+        {
+          "id": "etched_sword_reliquary",
+          "name": "Great sword, etched pommel",
+          "description": "A great sword driven point-first into the stone at the edge of the drop. The pommel is etched with the same script that lines the walls of the barrow.",
+          "hidden": false,
+          "properties": { "value_gp": 4 }
+        }
+      ],
+      "npcs": [],
+      "encounters": [],
+      "connections": [
+        {
+          "target_area_id": "sarcophagus_hall",
+          "label": "west door, jammed in frame",
+          "hidden": false,
+          "locked": false,
+          "locked_description": null
+        }
+      ],
+      "tags": ["boss", "hazard"],
+      "notes": {}
+    }
+  ],
+  "metadata": {
+    "author": "slosinski",
+    "level": "3",
+    "danger": "risky",
+    "quest": "Sacrifice something to appease whatever waits in the reliquary.",
+    "source": "Generated with sd_cmd/bnb"
+  }
+}
