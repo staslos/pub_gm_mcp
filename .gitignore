@@ -28,8 +28,9 @@ htmlcov/
 # Ruff
 .ruff_cache/
 
-# Data (adventures and sessions are local to each deployment)
+# Data (runtime state is local to each deployment)
 data/sessions/*.json
+data/campaign_sessions/*.json
 
 # OS
 .DS_Store

@@ -10,18 +10,26 @@ from mcp.server.models import InitializationOptions
 from mcp.types import Tool, TextContent, Resource, ReadResourceResult, TextResourceContents
 
 from pub_gm_mcp.models.adventure import Adventure, Area
+from pub_gm_mcp.models.campaign import Campaign, TravelNode
 from pub_gm_mcp.models.session import Session, PartyMember
+from pub_gm_mcp.models.campaign_session import CampaignSession, CampaignSessionState
 from pub_gm_mcp.parser.adventure_parser import AdventureParser
 from pub_gm_mcp.narrator.adventure_narrator import AdventureNarrator, NarrationError
+from pub_gm_mcp.campaign import CampaignStore, CampaignNarrator
+from pub_gm_mcp.campaign.campaign_narrator import CampaignNarrationError
 
 DATA_DIR = Path(os.environ.get("PUB_GM_DATA_DIR", Path.home() / ".pub-gm-mcp"))
 ADVENTURES_DIR = DATA_DIR / "adventures"
 SESSIONS_DIR = DATA_DIR / "sessions"
+CAMPAIGNS_DIR = DATA_DIR / "campaigns"
+CAMPAIGN_SESSIONS_DIR = DATA_DIR / "campaign_sessions"
 RESOURCES_DIR = Path(__file__).parent / "resources"
 
 server = Server("pub-gm-mcp")
 store = AdventureParser(ADVENTURES_DIR)
 narrator = AdventureNarrator(SESSIONS_DIR, store)
+campaign_store = CampaignStore(CAMPAIGNS_DIR, CAMPAIGN_SESSIONS_DIR)
+campaign_narrator = CampaignNarrator(campaign_store, store)
 
 
 # ---------------------------------------------------------------------------
@@ -43,7 +51,16 @@ async def list_resources() -> list[Resource]:
         Resource(
             uri="pub-gm://schema/adventure",
             name="Adventure JSON Schema",
-            description="Full JSON schema for the Adventure data model.",
+            description="Full JSON schema for the Adventure data model (a single explorable site).",
+            mimeType="application/json",
+        ),
+        Resource(
+            uri="pub-gm://schema/campaign",
+            name="Campaign JSON Schema",
+            description=(
+                "Full JSON schema for the Campaign data model. "
+                "A campaign links multiple Adventure sites with travel nodes."
+            ),
             mimeType="application/json",
         ),
     ]
@@ -58,6 +75,15 @@ async def read_resource(uri: str) -> ReadResourceResult:
         )
     if uri == "pub-gm://schema/adventure":
         schema = Adventure.model_json_schema()
+        return ReadResourceResult(
+            contents=[TextResourceContents(
+                uri=uri,
+                mimeType="application/json",
+                text=json.dumps(schema, indent=2),
+            )]
+        )
+    if uri == "pub-gm://schema/campaign":
+        schema = Campaign.model_json_schema()
         return ReadResourceResult(
             contents=[TextResourceContents(
                 uri=uri,
@@ -231,7 +257,170 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="add_gm_note",
-            description="Append a freeform GM note to the session log.",
+            description="Append a freeform GM note to the adventure session log.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "session_id": {"type": "string"},
+                    "note": {"type": "string"},
+                },
+                "required": ["session_id", "note"],
+            },
+        ),
+        # -- Campaign authoring --
+        Tool(
+            name="save_campaign",
+            description=(
+                "Persist a complete campaign. Pass the full campaign object. "
+                "Overwrites any existing campaign with the same id."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "campaign": {
+                        "type": "object",
+                        "description": "Full Campaign object matching the campaign schema.",
+                    }
+                },
+                "required": ["campaign"],
+            },
+        ),
+        Tool(
+            name="upsert_travel_node",
+            description="Add or replace a travel node within a stored campaign.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "campaign_id": {"type": "string"},
+                    "travel_node": {
+                        "type": "object",
+                        "description": "Full TravelNode object.",
+                    },
+                },
+                "required": ["campaign_id", "travel_node"],
+            },
+        ),
+        Tool(
+            name="get_campaign",
+            description="Retrieve the full stored campaign JSON.",
+            inputSchema={
+                "type": "object",
+                "properties": {"campaign_id": {"type": "string"}},
+                "required": ["campaign_id"],
+            },
+        ),
+        Tool(
+            name="delete_campaign",
+            description="Permanently delete a stored campaign.",
+            inputSchema={
+                "type": "object",
+                "properties": {"campaign_id": {"type": "string"}},
+                "required": ["campaign_id"],
+            },
+        ),
+        Tool(
+            name="list_campaigns",
+            description="List all stored campaign IDs.",
+            inputSchema={"type": "object", "properties": {}, "required": []},
+        ),
+        # -- Campaign sessions --
+        Tool(
+            name="create_campaign_session",
+            description="Start a new campaign session.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "campaign_id": {"type": "string"},
+                    "party": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                                "description": {"type": "string"},
+                            },
+                            "required": ["name"],
+                        },
+                    },
+                },
+                "required": ["campaign_id"],
+            },
+        ),
+        Tool(
+            name="get_campaign_session_state",
+            description="Return current campaign session state: position, visited nodes, active session.",
+            inputSchema={
+                "type": "object",
+                "properties": {"session_id": {"type": "string"}},
+                "required": ["session_id"],
+            },
+        ),
+        # -- Campaign narration --
+        Tool(
+            name="campaign_travel_to",
+            description=(
+                "Move the party to a campaign node (adventure site or travel node). "
+                "Returns OSR at-a-glance narration for the destination."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "session_id": {"type": "string"},
+                    "node_id": {"type": "string"},
+                },
+                "required": ["session_id", "node_id"],
+            },
+        ),
+        Tool(
+            name="campaign_inspect_node",
+            description=(
+                "Party looks around their current travel node. "
+                "Reveals one additional detail not visible at a glance. "
+                "Only valid when at a travel node, not inside an adventure site."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {"session_id": {"type": "string"}},
+                "required": ["session_id"],
+            },
+        ),
+        Tool(
+            name="campaign_list_exits",
+            description="List visible routes from the party's current campaign position.",
+            inputSchema={
+                "type": "object",
+                "properties": {"session_id": {"type": "string"}},
+                "required": ["session_id"],
+            },
+        ),
+        Tool(
+            name="campaign_enter_site",
+            description=(
+                "Record that the party has entered the adventure site at their current position. "
+                "Links the campaign session to an adventure session. "
+                "Use after create_session to connect the two."
+            ),
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "campaign_session_id": {"type": "string"},
+                    "adventure_session_id": {"type": "string"},
+                },
+                "required": ["campaign_session_id", "adventure_session_id"],
+            },
+        ),
+        Tool(
+            name="campaign_leave_site",
+            description="Record that the party has left the current adventure site and returned to the campaign map.",
+            inputSchema={
+                "type": "object",
+                "properties": {"session_id": {"type": "string"}},
+                "required": ["session_id"],
+            },
+        ),
+        Tool(
+            name="campaign_add_gm_note",
+            description="Append a freeform GM note to the campaign session log.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -248,7 +437,7 @@ async def list_tools() -> list[Tool]:
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     try:
         result = await _dispatch(name, arguments)
-    except (NarrationError, FileNotFoundError, FileExistsError, ValueError) as exc:
+    except (NarrationError, CampaignNarrationError, FileNotFoundError, FileExistsError, ValueError) as exc:
         result = f"Error: {exc}"
     return [TextContent(type="text", text=str(result))]
 
@@ -349,6 +538,103 @@ async def _dispatch(name: str, args: dict) -> str:
         session = narrator.load_session(args["session_id"])
         session.state.gm_notes.append(args["note"])
         narrator.save_session(session)
+        return "Note added."
+
+    # -- Campaign authoring --
+
+    if name == "save_campaign":
+        campaign = Campaign.model_validate(args["campaign"])
+        campaign_store.save_campaign(campaign)
+        node_count = len(campaign.travel_nodes) + len(campaign.adventure_ids)
+        return f"Campaign '{campaign.id}' saved ({node_count} nodes)."
+
+    if name == "upsert_travel_node":
+        campaign_id = args["campaign_id"]
+        node = TravelNode.model_validate(args["travel_node"])
+        campaign = campaign_store.load_campaign(campaign_id)
+        existing = next((i for i, n in enumerate(campaign.travel_nodes) if n.id == node.id), None)
+        if existing is not None:
+            campaign.travel_nodes[existing] = node
+            action = "updated"
+        else:
+            campaign.travel_nodes.append(node)
+            action = "added"
+        campaign_store.save_campaign(campaign)
+        return f"Travel node '{node.id}' {action} in campaign '{campaign_id}'."
+
+    if name == "get_campaign":
+        campaign = campaign_store.load_campaign(args["campaign_id"])
+        return campaign.model_dump_json(indent=2)
+
+    if name == "delete_campaign":
+        campaign_store.delete_campaign(args["campaign_id"])
+        return f"Campaign '{args['campaign_id']}' deleted."
+
+    if name == "list_campaigns":
+        campaigns = campaign_store.list_campaigns()
+        return "\n".join(campaigns) if campaigns else "No campaigns stored."
+
+    # -- Campaign sessions --
+
+    if name == "create_campaign_session":
+        campaign_id = args["campaign_id"]
+        party = [PartyMember(**m) for m in args.get("party", [])]
+        campaign = campaign_store.load_campaign(campaign_id)
+        session = CampaignSession(
+            id=str(uuid.uuid4())[:8],
+            campaign_id=campaign_id,
+            party=party,
+            state=CampaignSessionState(current_node_id=campaign.starting_node_id),
+        )
+        campaign_store.save_session(session)
+        return f"Campaign session '{session.id}' created for '{campaign_id}'."
+
+    if name == "get_campaign_session_state":
+        session = campaign_store.load_session(args["session_id"])
+        s = session.state
+        lines = [
+            f"Campaign: {session.campaign_id}",
+            f"Current node: {s.current_node_id or 'none'}",
+            f"In adventure site: {s.in_adventure}",
+            f"Active adventure session: {s.active_session_id or 'none'}",
+            f"Visited adventure sites: {', '.join(s.visited_adventure_ids) or 'none'}",
+            f"GM notes: {len(s.gm_notes)}",
+        ]
+        return "\n".join(lines)
+
+    # -- Campaign narration --
+
+    if name == "campaign_travel_to":
+        session = campaign_store.load_session(args["session_id"])
+        return campaign_narrator.travel_to_node(session, args["node_id"])
+
+    if name == "campaign_inspect_node":
+        session = campaign_store.load_session(args["session_id"])
+        return campaign_narrator.inspect_travel_node(session)
+
+    if name == "campaign_list_exits":
+        session = campaign_store.load_session(args["session_id"])
+        exits = campaign_narrator.list_exits(session)
+        if not exits:
+            return "No visible routes from here."
+        lines = [
+            f"- {e['label']} → {e['to']}" + (f" ({e['travel_time']})" if e["travel_time"] else "")
+            for e in exits
+        ]
+        return "\n".join(lines)
+
+    if name == "campaign_enter_site":
+        session = campaign_store.load_session(args["campaign_session_id"])
+        return campaign_narrator.enter_adventure_site(session, args["adventure_session_id"])
+
+    if name == "campaign_leave_site":
+        session = campaign_store.load_session(args["session_id"])
+        return campaign_narrator.leave_adventure_site(session)
+
+    if name == "campaign_add_gm_note":
+        session = campaign_store.load_session(args["session_id"])
+        session.state.gm_notes.append(args["note"])
+        campaign_store.save_session(session)
         return "Note added."
 
     raise ValueError(f"Unknown tool: {name}")
