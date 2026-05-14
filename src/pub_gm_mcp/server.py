@@ -7,6 +7,7 @@ from pathlib import Path
 import mcp.server.stdio
 from mcp.server import Server
 from mcp.server.models import InitializationOptions
+from mcp.server.lowlevel.server import NotificationOptions
 from mcp.types import Tool, TextContent, Resource, ReadResourceResult, TextResourceContents
 
 from pub_gm_mcp.models.adventure import Adventure, Area
@@ -652,7 +653,7 @@ def main() -> None:
                     server_name="pub-gm-mcp",
                     server_version="0.1.0",
                     capabilities=server.get_capabilities(
-                        notification_options=None,
+                        notification_options=NotificationOptions(),
                         experimental_capabilities={},
                     ),
                 ),
