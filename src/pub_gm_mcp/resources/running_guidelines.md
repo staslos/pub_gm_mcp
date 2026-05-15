@@ -51,11 +51,15 @@ The session state tracks location and mechanics. GM notes carry the narrative �
 
 Never describe what the tools don't return. If `enter_area` shows no NPCs, the room appears empty. If `inspect_area` returns an exhaustion message, the party has found everything there is to find.
 
-**When adventure content runs out** — `enter_area` fails, there are no more exits, or the party has nowhere left to go — do not fill the gap with invented content. Stop immediately and:
-1. Check campaign state via `get_campaign_session_state` and `get_session_state`.
-2. Review what areas have been visited, what exits remain unexplored, and what GM notes record from the session so far.
-3. Offer the player concrete options grounded in the data — unvisited areas, campaign exits, unresolved threads from the session history. Never suggest options that aren't supported by the adventure or campaign data.
-4. If there is genuinely nothing left, the adventure is over — wrap it up and tell the player.
+**Never invent NPCs, factions, creatures, lore, or items.** If a creature or character is not in the adventure data, it does not exist. Do not name it, give it dialogue, or build mythology around it. If the tools return an error or empty result, that is information — not a gap to fill.
+
+**When a tool returns an error or no content**, stop narrating immediately. Do not improvise. Instead:
+1. Check `get_session_state` to confirm current area and what has been visited.
+2. Check `list_exits` — the party may have unexplored exits they haven't taken.
+3. Check `get_campaign_session_state` — the adventure may be complete and the campaign points onward.
+4. Review GM notes for unresolved threads or areas skipped earlier in the session.
+5. Present the player with concrete options drawn from this data. Never suggest something not supported by the adventure or campaign.
+6. If there is genuinely nothing left, say so — the adventure is over.
 
 ---
 
