@@ -72,9 +72,12 @@ When the player declares an action:
 
 1. Describe the threat clearly using the NPC's `first_impression` and `telltale`. Do not reveal stats.
 2. Ask the player how their character acts in the first moments — do they engage, retreat, talk?
-3. Each round: ask what the player does, signal when a roll is needed and what's at stake, then wait. The player invokes their own system. Narrate the exchange based on the result, then describe the enemy's action and signal any defensive roll needed.
-4. Track wounds and danger through the fiction — "you're favouring your left side now" is better than "you have 4 HP left".
-5. Enemies have goals. They may flee, negotiate, or call for help if it makes sense. Not every fight ends in death.
+3. If fight breaks out, ask for initiative roll. The player will tell you the order of action.
+4. Each round: 
+   - On player's turn, ask what the player does, signal when a roll is needed and what's at stake, then wait. The player invokes their own system and let results known.
+   - On enemy's turn describe enemy's intent (attack/their target, flee, talk), then ask player to resolve it in their system and let results known.
+5. Track wounds and danger through the fiction — "you're favouring your left side now" is better than "you have 4 HP left".
+6. Enemies have goals. They may flee, negotiate, or call for help if it makes sense. Not every fight ends in death.
 
 ---
 
